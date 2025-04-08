@@ -1,5 +1,4 @@
 import streamlit as st
-from reportlab.lib.pagesizes import IDCARD
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 import qrcode
@@ -21,8 +20,9 @@ def gerar_qrcode(dados):
 
 def gerar_carteirinha(nome, curso, matricula, validade, foto, logotipo):
     buffer = io.BytesIO()
-    c = canvas.Canvas(buffer, pagesize=IDCARD)
-    largura, altura = IDCARD
+    largura = 85.6 * mm
+    altura = 53.98 * mm
+    c = canvas.Canvas("carteirinha.pdf", pagesize=(largura, altura))
 
     c.setFillColorRGB(0.8, 1, 0.8)
     c.rect(0, 0, largura, altura, fill=True, stroke=False)
@@ -56,9 +56,7 @@ def gerar_carteirinha(nome, curso, matricula, validade, foto, logotipo):
         logo_height = 15 * mm
         x_central = (largura - logo_width) / 2
         y_base = 5 * mm
-        # Central
         c.drawImage(caminho_logo, x_central, y_base, width=logo_width, height=logo_height)
-        # Esquerda
         c.drawImage(caminho_logo, 5 * mm, y_base, width=logo_width, height=logo_height)
         os.remove(caminho_logo)
 
@@ -77,7 +75,7 @@ if not st.session_state.autenticado:
         if usuario in USUARIOS and USUARIOS[usuario] == senha:
             st.session_state.autenticado = True
             st.success("Login realizado com sucesso!")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Usuário ou senha incorretos")
 else:
